@@ -1,10 +1,12 @@
+let env = require('dotenv').config();
+
 export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'snippets-client',
+    titleTemplate: '%s - Snippets',
     htmlAttrs: {
       lang: 'en'
     },
@@ -37,6 +39,8 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+    '@nuxtjs/axios',
+    '@nuxtjs/auth',
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
@@ -44,6 +48,30 @@ export default {
     postcss: {
       plugins: {
         tailwindcss: './tailwind.config.js'
+      }
+    }
+  },
+  axios:{
+    baseURL: env.parsed.BASE_URL,
+  },
+  auth: {
+    strategies: {
+      local: {
+        token: {
+          property: 'data',
+          global: true,
+          // required: true,
+          // type: 'Bearer'
+        },
+        user: {
+          property: 'data',
+          // autoFetch: true
+        },
+        endpoints: {
+          login: { url: '/auth/signin', method: 'post', propertyName:"data.token" },
+          logout: { url: '/auth/signout', method: 'post' },
+          user: { url: '/auth/me', method: 'get', propertyName:"data"}
+        }
       }
     }
   }

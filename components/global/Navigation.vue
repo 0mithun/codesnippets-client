@@ -49,6 +49,8 @@
         <ul
           class="lg:h-24 lg:flex items-center w-full lg:w-auto ml-auto text-right"
         >
+
+        <template v-if="$auth.loggedIn">
           <li>
             <nuxt-link
               :to="{ name: 'index' }"
@@ -60,12 +62,22 @@
             <nuxt-link
               :to="{ name: 'index' }"
               class="text-lg text-gray-700 lg:py-8 lg:px-4"
-              >Mithun Halder</nuxt-link
+              >{{ $auth.user.name }}</nuxt-link
             >
           </li>
+           <li>
+            <a
+              @click.prevent="signOut"
+              class="text-lg text-gray-700 lg:py-8 lg:px-4"
+              href="#"
+              >Sign Out</a
+            >
+          </li>
+        </template>
+        <template v-else>
           <li>
             <nuxt-link
-              :to="{ name: 'index' }"
+              :to="{ name: 'auth-signin' }"
               class="text-lg text-gray-700 lg:py-8 lg:px-4"
               >Sign In</nuxt-link
             >
@@ -77,13 +89,11 @@
               >Create an account</nuxt-link
             >
           </li>
-          <li>
-            <nuxt-link
-              :to="{ name: 'index' }"
-              class="text-lg text-gray-700 lg:py-8 lg:px-4"
-              >Sign Out</nuxt-link
-            >
-          </li>
+        </template>
+
+
+
+
         </ul>
       </div>
     </div>
@@ -96,6 +106,11 @@ export default {
     return {
       mobileNavOpen: false,
     };
+  },
+  methods: {
+    async signOut(){
+      await this.$auth.logout();
+    }
   },
 };
 </script>
