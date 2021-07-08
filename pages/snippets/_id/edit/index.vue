@@ -9,6 +9,7 @@
               class="text-4xl text-gray-700 font-medium font-header leading-tight mb-4 w-full block p-2 border-2 rounded border-dashed  border-gray-400"
               value=""
               placeholder="Untitled snippets"
+              v-model="snippet.title"
             />
             <div class="text-gray-600">
               Created By <nuxt-link :to="{name:'index'}">Mithun Halder</nuxt-link>
@@ -18,12 +19,13 @@
     </div>
     <div class="container">
       <div class="flex items-center mb-6">
-        <div class="text-xl text-gray-600 font-medium mr-3">1/1</div>
+        <div class="text-xl text-gray-600 font-medium font-header mr-3"> {{ currentStepIndex + 1 }}/{{ steps.length }}.</div>
         <input
           type="text"
           value=""
           placeholder="Untitled step"
-          class="text-xl text-gray-600 font-medium p-2 py-1 bg-transparent  border-2  border-gray-400 rounded border-dashed w-full"
+          class="text-xl text-gray-600 font-medium font-header p-2 py-1 bg-transparent  border-2  border-gray-400 rounded border-dashed w-full"
+          v-model="currentStep.title"
           >
       </div>
 
@@ -31,18 +33,14 @@
       <div class="flex flex-wrap lg:flex-nowrap">
         <div class="w-full lg:w-8/12 lg:mr-16 flex flex-wrap lg:flex-nowrap justify-between items-start mb-8">
           <div class="flex flex-row lg:flex-col mr-2 order-first  ">
-            <nuxt-link
-              :to="{name:'index'}"
-              class="block mb-2 p-3 rounded-lg   bg-blue-500 mr-2 lg:mr-0"
-              title="Previous step"
-            >
+            <step-navigation-button :step="prevStep">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fill-current text-white h-6 w-6">
                 <path  d="M5.41 11H21a1 1 0 0 1 0 2H5.41l5.3 5.3a1 1 0 0 1-1.42 1.4l-7-7a1 1 0 0 1 0-1.4l7-7a1 1 0 0 1 1.42 1.4L5.4 11z"/></svg>
-            </nuxt-link>
+            </step-navigation-button>
 
              <nuxt-link
               :to="{name:'index'}"
-              class="block mb-2 p-3 rounded-lg bg-blue-500"
+              class="block mb-2 p-3 rounded-lg bg-blue-500 mr-2 lg:mr-0"
               title="add step before"
             >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fill-current text-white h-6 w-6">
@@ -52,22 +50,21 @@
 
 
           <div class="w-full lg:mr-2">
-            <textarea class="w-full rounded-lg mb-6 border-2 border-dashed border-gray-400 ">Editor</textarea>
+            <textarea
+              class="w-full rounded-lg mb-6 border-2 border-dashed border-gray-400 "
+              v-model="currentStep.body"
+            ></textarea>
             <div class="bg-white rounded-lg p-8  text-gray-600 ">Markdown Content</div>
           </div>
 
 
           <div class=" flex flex-row lg:flex-col order-first lg:order-last">
 
-
-            <nuxt-link
-              :to="{name:'index'}"
-              class="block mb-2 p-3 rounded-lg bg-blue-500  order-last lg:order-first"
-              title="next step"
-            >
+            <step-navigation-button :step="nextStep">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"  class="fill-current text-white h-6 w-6">
               <path  d="M18.59 13H3a1 1 0 0 1 0-2h15.59l-5.3-5.3a1 1 0 1 1 1.42-1.4l7 7a1 1 0 0 1 0 1.4l-7 7a1 1 0 0 1-1.42-1.4l5.3-5.3z"/></svg>
-            </nuxt-link>
+            </step-navigation-button>
+
               <nuxt-link
               :to="{name:'index'}"
               class="block mb-2 p-3 rounded-lg bg-blue-500  mr-2 lg:mr-0"
@@ -103,18 +100,7 @@
         <div class="w-full lg:w-4/12">
           <div class="mb-8">
             <h1 class="text-xl text-gray-600 font-medium mb-6">Steps</h1>
-            <ul>
-              <li
-                v-for="(step, index) in 5"
-                :key="index"
-                class="mb-1"
-                >
-                <nuxt-link
-                  :to="{name:'index'}"
-                  :class="{'font-bold': index===0}"
-                >{{ index+ 1 }}. Step title</nuxt-link>
-              </li>
-            </ul>
+            <step-list :steps="orderedStepsAsc" :currentStep="currentStep"></step-list>
           </div>
           <div class="text-gray-500 text-sm">
             Use
@@ -130,8 +116,53 @@
 </template>
 
 <script>
-  export default {
 
+import {debounce as _debounce} from 'lodash';
+import StepList from '../components/StepList.vue'
+import StepNavigationButton from '../components/StepNavigationButton.vue';
+import browseSnippet from '@/mixins/snippets/browseSnippet'
+
+  export default {
+    mixins: [browseSnippet],
+    data() {
+      return {
+      }
+    },
+    components:{
+      StepList,
+        StepNavigationButton
+    },
+    head(){
+      return {
+        title: `Editing ${this.snippet.title || 'Untitled snippet'}`
+      }
+    },
+    watch:{
+      'snippet.title':{
+        handler: _debounce(async function (title) {
+          await this.$axios.$patch(`snippets/${this.snippet.uuid}`,{title: this.snippet.title})
+        },500)
+        //debounce
+      },
+      currentStep: {
+        deep: true,
+        handler: _debounce(async function (step) {
+          await this.$axios.$patch(`snippets/${this.snippet.uuid}/steps/${this.currentStep.uuid}`,{title: this.currentStep.title, body:this.currentStep.body})
+        },500)
+      }
+    },
+
+    async asyncData({ store, params, query, redirect,app}) {
+        try {
+          const snippet = await app.$axios.$get(`snippets/${params.id}`)
+          return {
+            snippet: snippet.data,
+            steps: snippet.data.steps.data
+          }
+        } catch (error) {
+
+        }
+    },
   }
 </script>
 
