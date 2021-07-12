@@ -3,7 +3,7 @@
     <div class="bg-white mb-16">
       <div class="container py-10 pb-16">
           <div class="w-10/12">
-            <h1 class="text-4xl text-gray-700 font-medium leading-tight mb-4">{{ snippet.title }}</h1>
+            <h1 class="text-4xl text-gray-700 font-medium leading-tight mb-4">{{ snippet.title || 'Untitled Snippet' }}</h1>
             <div class="text-gray-600">
               Created By <nuxt-link :to="{name:'index'}">{{ author.name }}</nuxt-link>
             </div>
