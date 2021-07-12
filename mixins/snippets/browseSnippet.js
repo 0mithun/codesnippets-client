@@ -1,4 +1,6 @@
 import {orderBy as _orderBy} from 'lodash';
+import hotkeys from 'hotkeys-js';
+
 export default {
   computed: {
     orderedStepsAsc(){
@@ -28,5 +30,32 @@ export default {
     currentStepIndex(){
       return this.orderedStepsAsc.map(item=>item.uuid).indexOf(this.currentStep.uuid)
     }
+  },
+  mounted() {
+    this.registerKeyboardShortcuts();
+  },
+  methods: {
+    goToStep(step){
+      this.$router.push({
+        query:{step: step.uuid}
+      })
+    },
+    registerKeyboardShortcuts(){
+      hotkeys('ctrl+left,ctrl+right ', (event, handler) =>{
+        switch (handler.key){
+          case 'ctrl+left':
+            if(this.prevStep){
+              this.goToStep(this.prevStep)
+            }
+            break;
+          case 'ctrl+right':
+            if(this.nextStep){
+              this.goToStep(this.nextStep)
+            }
+            break;
+        }
+      });
+    },
+
   },
 }

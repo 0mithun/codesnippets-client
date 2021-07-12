@@ -2,6 +2,7 @@ let env = require('dotenv').config();
 
 export default {
   // Target: https://go.nuxtjs.dev/config-target
+  env: env.parsed,
   target: 'static',
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -23,7 +24,7 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    '~assets/styles/app.css'
+    '~/assets/styles/app.scss'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -52,21 +53,23 @@ export default {
     }
   },
   axios:{
-    baseURL: env.parsed.BASE_URL,
+    baseURL: process.env.API_URL,
   },
+
+
   auth: {
     strategies: {
       local: {
-        token: {
-          property: 'data',
-          global: true,
-          // required: true,
-          // type: 'Bearer'
-        },
-        user: {
-          property: 'data',
-          // autoFetch: true
-        },
+        // token: {
+        //   property: 'data',
+        //   global: true,
+        //   // required: true,
+        //   // type: 'Bearer'
+        // },
+        // user: {
+        //   property: 'data',
+        //   // autoFetch: true
+        // },
         endpoints: {
           login: { url: '/auth/signin', method: 'post', propertyName:"data.token" },
           logout: { url: '/auth/signout', method: 'post' },

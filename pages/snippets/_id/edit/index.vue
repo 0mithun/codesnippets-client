@@ -3,7 +3,6 @@
     <div class="bg-white mb-16">
       <div class="container py-10 pb-16">
           <div class="w-10/12">
-
             <input
               type="text"
               class="text-4xl text-gray-700 font-medium font-header leading-tight mb-4 w-full block p-2 border-2 rounded border-dashed  border-gray-400"
@@ -37,24 +36,12 @@
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fill-current text-white h-6 w-6">
                 <path  d="M5.41 11H21a1 1 0 0 1 0 2H5.41l5.3 5.3a1 1 0 0 1-1.42 1.4l-7-7a1 1 0 0 1 0-1.4l7-7a1 1 0 0 1 1.42 1.4L5.4 11z"/></svg>
             </step-navigation-button>
-
-             <nuxt-link
-              :to="{name:'index'}"
-              class="block mb-2 p-3 rounded-lg bg-blue-500 mr-2 lg:mr-0"
-              title="add step before"
-            >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fill-current text-white h-6 w-6">
-              <path d="M17 11a1 1 0 0 1 0 2h-4v4a1 1 0 0 1-2 0v-4H7a1 1 0 0 1 0-2h4V7a1 1 0 0 1 2 0v4h4z"/></svg>
-            </nuxt-link>
+            <add-step-button @added="handleStepAdded"  :snippet="snippet" :currentStep="currentStep" position="before"></add-step-button>
           </div>
 
 
           <div class="w-full lg:mr-2">
-            <textarea
-              class="w-full rounded-lg mb-6 border-2 border-dashed border-gray-400 "
-              v-model="currentStep.body"
-            ></textarea>
-            <div class="bg-white rounded-lg p-8  text-gray-600 ">Markdown Content</div>
+              <step-editor :step="currentStep" v-model="currentStep.body"></step-editor>
           </div>
 
 
@@ -64,34 +51,9 @@
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"  class="fill-current text-white h-6 w-6">
               <path  d="M18.59 13H3a1 1 0 0 1 0-2h15.59l-5.3-5.3a1 1 0 1 1 1.42-1.4l7 7a1 1 0 0 1 0 1.4l-7 7a1 1 0 0 1-1.42-1.4l5.3-5.3z"/></svg>
             </step-navigation-button>
+            <add-step-button @added="handleStepAdded" :snippet="snippet" :currentStep="currentStep" position="after"></add-step-button>
 
-              <nuxt-link
-              :to="{name:'index'}"
-              class="block mb-2 p-3 rounded-lg bg-blue-500  mr-2 lg:mr-0"
-              title="add step after"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fill-current text-white h-6 w-6">
-              <path d="M17 11a1 1 0 0 1 0 2h-4v4a1 1 0 0 1-2 0v-4H7a1 1 0 0 1 0-2h4V7a1 1 0 0 1 2 0v4h4z"/></svg>
-            </nuxt-link>
-              <nuxt-link
-              :to="{name:'index'}"
-              class="block mb-2 p-3 rounded-lg bg-blue-500 mr-2 lg:mr-0"
-              title="Delete Step"
-            >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fill-current text-white h-6 w-6"><path  d="M8 6V4c0-1.1.9-2 2-2h4a2 2 0 0 1 2 2v2h5a1 1 0 0 1 0 2h-1v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8H3a1 1 0 1 1 0-2h5zM6 8v12h12V8H6zm8-2V4h-4v2h4zm-4 4a1 1 0 0 1 1 1v6a1 1 0 0 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 0 1-2 0v-6a1 1 0 0 1 1-1z"/></svg>
-
-            </nuxt-link>
-
-
-
-            <!-- <nuxt-link
-              :to="{name:'index'}"
-              class="block mb-2 p-3 rounded-lg bg-blue-500 mr-2 lg:mr-0 order-first lg:order-last"
-              title="Edit Step"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fill-current text-white h-6 w-6"><path  d="M6.3 12.3l10-10a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1 0 1.4l-10 10a1 1 0 0 1-.7.3H7a1 1 0 0 1-1-1v-4a1 1 0 0 1 .3-.7zM8 16h2.59l9-9L17 4.41l-9 9V16zm10-2a1 1 0 0 1 2 0v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h6a1 1 0 0 1 0 2H4v14h14v-6z"/></svg>
-            </nuxt-link> -->
-
+            <delete-step-button v-if="steps.length > 1"  @deleted="handleStepDeleted" :snippet="snippet" :currentStep="currentStep"></delete-step-button>
           </div>
 
         </div>
@@ -102,10 +64,41 @@
             <h1 class="text-xl text-gray-600 font-medium mb-6">Steps</h1>
             <step-list :steps="orderedStepsAsc" :currentStep="currentStep"></step-list>
           </div>
+
+          <div class="border-t-2 border-gray-300 py-6">
+            <h1 class="text-xl text-gray-600 font-medium mb-2">Publishing</h1>
+            <div class="text-gray-500 text-sm mb-6">
+              <template v-if="lastSaved">
+                Last saved at {{ lastSavedFormatted }}
+              </template>
+              <template v-else>
+                No changes saved in this sessions yet.
+              </template>
+            </div>
+            <div class="flex items-baseline">
+              <input
+                type="checkbox"
+                name="public"
+                id="public"
+                class="mr-2"
+                v-model="snippet.is_public"
+              >
+              <div>
+                <label
+                  for="public"
+                  class="text-gray-600 font-medium"
+                >Make this public</label>
+                <div class="text-gray-500 text-sm">
+                  Don't worry, you can change this later.
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="text-gray-500 text-sm">
             Use
               <div class="inline-block px-2 leading-relaxed  text-gray-600 rounded bg-gray-400 text-sm">ctrl</div>
-                + <div class="inline-block px-2 leading-relaxed  text-gray-600 rounded bg-gray-400 text-sm">shift</div>
+                <!-- + <div class="inline-block px-2 leading-relaxed  text-gray-600 rounded bg-gray-400 text-sm">shift</div> -->
                  + <div class="inline-block px-2 leading-relaxed  text-gray-600 rounded bg-gray-400 text-sm">left or right</div> on your keyboard to navigaiton between steps
           </div>
         </div>
@@ -121,16 +114,24 @@ import {debounce as _debounce} from 'lodash';
 import StepList from '../components/StepList.vue'
 import StepNavigationButton from '../components/StepNavigationButton.vue';
 import browseSnippet from '@/mixins/snippets/browseSnippet'
+import AddStepButton from './components/AddStepButton.vue';
+import DeleteStepButton from './components/DeleteStepButton.vue';
+import moment from 'moment'
+import StepEditor from './components/StepEditor.vue';
 
   export default {
     mixins: [browseSnippet],
     data() {
       return {
+        lastSaved: null
       }
     },
     components:{
       StepList,
-        StepNavigationButton
+        StepNavigationButton,
+        AddStepButton,
+        DeleteStepButton,
+        StepEditor
     },
     head(){
       return {
@@ -141,6 +142,14 @@ import browseSnippet from '@/mixins/snippets/browseSnippet'
       'snippet.title':{
         handler: _debounce(async function (title) {
           await this.$axios.$patch(`snippets/${this.snippet.uuid}`,{title: this.snippet.title})
+          this.touchLastSaved()
+        },500)
+        //debounce
+      },
+      'snippet.is_public':{
+        handler: _debounce(async function (is_public) {
+          await this.$axios.$patch(`snippets/${this.snippet.uuid}`,{is_public: this.snippet.is_public})
+          this.touchLastSaved()
         },500)
         //debounce
       },
@@ -148,7 +157,13 @@ import browseSnippet from '@/mixins/snippets/browseSnippet'
         deep: true,
         handler: _debounce(async function (step) {
           await this.$axios.$patch(`snippets/${this.snippet.uuid}/steps/${this.currentStep.uuid}`,{title: this.currentStep.title, body:this.currentStep.body})
+          this.touchLastSaved()
         },500)
+      }
+    },
+    computed:{
+      lastSavedFormatted(){
+        return moment(this.lastSaved).format('hh:mm:ss')
       }
     },
 
@@ -162,6 +177,21 @@ import browseSnippet from '@/mixins/snippets/browseSnippet'
         } catch (error) {
 
         }
+    },
+    methods: {
+      touchLastSaved(){
+        this.lastSaved = moment.now();
+      },
+      handleStepAdded(step){
+        this.steps.push(step)
+        this.goToStep(step)
+      },
+      handleStepDeleted(step){
+        this.steps = this.steps.filter(s=> s.uuid !== step.uuid);
+
+        this.goToStep(this.prevStep || this.firstStep)
+      },
+
     },
   }
 </script>
