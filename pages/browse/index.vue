@@ -21,7 +21,12 @@ import BrowseSnippetCard from './components/BrowseSnippetCard.vue'
     components:{
         BrowseSnippetCard
     },
-   async asyncData({app}) {
+     head(){
+      return {
+        title: `Browse snippets'}`
+      }
+    },
+    async asyncData({app}) {
        try {
         const res = await app.$axios.$get('snippets')
         return {

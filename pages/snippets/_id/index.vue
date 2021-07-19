@@ -69,11 +69,11 @@ import StepMarkdown from '~/components/snippets/StepMarkdown.vue';
   export default {
      mixins: [browseSnippet],
        data () {
-    return {
-      snippet: null,
-      steps: [],
-    };
-  },
+        return {
+          snippet: null,
+          steps: [],
+        };
+      },
        async asyncData({ store, params, query, redirect,app, $axios}) {
         try {
           const snippet = await $axios.$get(`snippets/${params.id}`)
