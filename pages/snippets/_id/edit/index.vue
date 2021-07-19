@@ -121,6 +121,7 @@ import StepEditor from './components/StepEditor.vue';
 
   export default {
     mixins: [browseSnippet],
+    middleware:['auth'],
     data() {
       return {
         lastSaved: null

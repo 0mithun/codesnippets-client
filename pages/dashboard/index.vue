@@ -20,8 +20,9 @@
 <script>
 import DashboardSnippetCard from './components/DashboardSnippetCard.vue';
   export default {
-  components: { DashboardSnippetCard },
-     head(){
+    middleware:['auth'],
+    components: { DashboardSnippetCard },
+    head(){
       return {
         title: `Dashboard'`
       }
