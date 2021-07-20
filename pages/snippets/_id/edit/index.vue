@@ -11,7 +11,8 @@
               v-model="snippet.title"
             />
             <div class="text-gray-600">
-              Created By <nuxt-link :to="{name:'index'}">Mithun Halder</nuxt-link>
+              <!-- Created By <nuxt-link :to="{name:'index'}">Mithun Halder</nuxt-link> -->
+               Created By <nuxt-link :to="{name:'author-id',params:{id: snippet.author.data.username}}">{{ snippet.author.data.name }}</nuxt-link>
             </div>
           </div>
       </div>

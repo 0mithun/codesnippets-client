@@ -46,7 +46,7 @@
       </form>
       <div class="text-ceter text-gray-600">
         No Account? <nuxt-link
-          :to="{name:'auth-signin'}"
+          :to="{name:'auth-signup'}"
         >Create an account.</nuxt-link>
       </div>
     </div>

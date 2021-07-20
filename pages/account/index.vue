@@ -110,8 +110,10 @@
     methods: {
       async submit(){
         try {
+          this.validation = {}
            await this.$axios.$patch(`users/${this.$auth.user.username}`,this.form)
            await this.$auth.fetchUser()
+           this.form.password = ''
          } catch (error) {
           if(error.response.status == 422){
             this.validation = error.response.data.errors;
