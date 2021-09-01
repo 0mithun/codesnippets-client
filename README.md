@@ -1,5 +1,8 @@
 # snippets-client
 
+# This is a code snippets share website.
+## We are going to use Nuxt.js
+
 ## Build Setup
 
 ```bash
